@@ -18,7 +18,6 @@ data class Transaction(
 
     val title: String,
 
-    @Enumerated(EnumType.STRING)
     val category: String?,
 
     @Column(
