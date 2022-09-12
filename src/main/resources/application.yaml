@@ -1,0 +1,27 @@
+spring:
+  data:
+    rest:
+      base-path: /api
+  application:
+    name: expenses-dashboard-api
+  datasource:
+    ddl-auto: update
+    url: jdbc:mysql://localhost:3306/expenses_dashboard
+    username: root
+    password: mypassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    show-sql: true
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop # recreates the db, not recommended for prod
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual_creation: true
+  h2:
+    console:
+    enabled: true
