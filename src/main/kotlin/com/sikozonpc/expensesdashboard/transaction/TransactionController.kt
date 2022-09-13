@@ -21,4 +21,11 @@ class TransactionController(
     fun add(
         @RequestBody @Valid dto: TransactionDTO,
     ): TransactionDTO = transactionService.add(dto)
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    fun update(
+        @RequestBody dto: TransactionDTO,
+        @PathVariable("id") id: Int,
+    ): TransactionDTO = transactionService.update(id, dto)
 }

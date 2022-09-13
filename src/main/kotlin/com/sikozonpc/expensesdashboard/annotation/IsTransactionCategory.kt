@@ -1,4 +1,4 @@
-package com.sikozonpc.expensesdashboard.validation
+package com.sikozonpc.expensesdashboard.annotation
 
 import com.sikozonpc.expensesdashboard.transaction.TransactionCategories
 import enumContains

@@ -14,11 +14,11 @@ data class Transaction(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Int?,
 
-    val amount: String,
+    var amount: String,
 
-    val title: String,
+    var title: String,
 
-    val category: String?,
+    var category: String?,
 
     @Column(
         name = "created_date",

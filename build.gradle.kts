@@ -11,9 +11,16 @@ plugins {
 group = "com.sikozonpc"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
+extra["testcontainersVersion"] = "1.16.2"
 
 repositories {
 	mavenCentral()
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+	}
 }
 
 dependencies {
@@ -38,6 +45,11 @@ dependencies {
 
 	// logging
 	implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
+
+	// TestContainers
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:mysql:1.17.3")
+
 }
 
 tasks.withType<KotlinCompile> {

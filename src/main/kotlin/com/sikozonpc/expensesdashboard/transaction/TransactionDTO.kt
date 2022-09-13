@@ -1,6 +1,6 @@
 package com.sikozonpc.expensesdashboard.transaction
 
-import com.sikozonpc.expensesdashboard.validation.IsTransactionCategory
+import com.sikozonpc.expensesdashboard.annotation.IsTransactionCategory
 import javax.validation.constraints.DecimalMin
 import javax.validation.constraints.NotBlank
 
