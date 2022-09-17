@@ -1,17 +1,15 @@
 package com.sikozonpc.expensesdashboard.controller
 
-import com.sikozonpc.expensesdashboard.transaction.TransactionControllerURL
-import com.sikozonpc.expensesdashboard.transaction.TransactionDTO
+import com.sikozonpc.expensesdashboard.dto.TransactionDTO
 import com.sikozonpc.expensesdashboard.util.BaseTests
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.expectBody
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
 import org.springframework.data.repository.findByIdOrNull
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,12 +17,6 @@ import org.springframework.data.repository.findByIdOrNull
 @AutoConfigureWebClient
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TransactionControllerIntegrationTest : BaseTests() {
-    @BeforeEach
-    fun setup() {
-        transactionRepository.deleteAll()
-        transactionRepository.saveAll(fakeTransactions)
-    }
-
     @Test
     fun `should add a transaction`() {
         val payload = TransactionDTO(420, "Sample", "42.69", "WANT")
@@ -97,5 +89,17 @@ class TransactionControllerIntegrationTest : BaseTests() {
             .bodyValue(updated)
             .exchange()
             .expectStatus().isNotFound
+    }
+
+    @Test
+    fun `should delete a transaction`() {
+        val transaction = transactionRepository.findAll().firstOrNull()
+        webTestClient.delete()
+            .uri("$TransactionControllerURL/${transaction!!.id}")
+            .exchange()
+            .expectStatus().isOk
+
+        val deletedTransaction = transactionRepository.findById(transaction!!.id!!)
+        assertFalse(deletedTransaction.isPresent)
     }
 }

@@ -1,11 +1,13 @@
-package com.sikozonpc.expensesdashboard.transaction
+package com.sikozonpc.expensesdashboard.controller
 
+import com.sikozonpc.expensesdashboard.dto.TransactionDTO
+import com.sikozonpc.expensesdashboard.service.TransactionService
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
-const val TransactionControllerURL = "/transactions"
+const val TransactionControllerURL = "/api/v1/transactions"
 
 @RestController
 @RequestMapping(TransactionControllerURL)
@@ -28,4 +30,8 @@ class TransactionController(
         @RequestBody dto: TransactionDTO,
         @PathVariable("id") id: Int,
     ): TransactionDTO = transactionService.update(id, dto)
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    fun delete(@PathVariable("id") id: Int) = transactionService.delete(id)
 }

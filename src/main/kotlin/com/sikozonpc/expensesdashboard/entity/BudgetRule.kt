@@ -1,24 +1,18 @@
-package com.sikozonpc.expensesdashboard.transaction
+package com.sikozonpc.expensesdashboard.entity
 
 import org.springframework.data.annotation.CreatedDate
-import java.time.Instant
+import java.time.LocalDateTime
 import javax.persistence.*
 
-enum class TransactionCategories {
-    WANT, NEED
-}
-
 @Entity()
-data class Transaction(
+data class BudgetRule(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Int?,
 
-    var amount: String,
+    var needsPercentage: String,
 
-    var title: String,
-
-    var category: String?,
+    var wantsPercentage: String,
 
     @Column(
         name = "created_date",
@@ -26,5 +20,5 @@ data class Transaction(
         updatable = false,
     )
     @CreatedDate
-    val createdDate: Instant,
+    val createdDate: LocalDateTime,
 )

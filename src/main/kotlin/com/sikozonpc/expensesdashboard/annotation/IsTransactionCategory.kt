@@ -1,6 +1,6 @@
 package com.sikozonpc.expensesdashboard.annotation
 
-import com.sikozonpc.expensesdashboard.transaction.TransactionCategories
+import com.sikozonpc.expensesdashboard.entity.TransactionCategories
 import enumContains
 import javax.validation.Constraint
 import javax.validation.ConstraintValidator
