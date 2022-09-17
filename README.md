@@ -3,6 +3,10 @@
 ### Description
 This is the API that provides the client dashboards to store and visualize personal expenses.
 
+### Requirements
+
+- Docker installed (with an MySQL container running).
+
 ### Technologies
 
 - Spring boot based project.
