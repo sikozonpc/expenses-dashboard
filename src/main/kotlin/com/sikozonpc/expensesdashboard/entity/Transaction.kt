@@ -9,6 +9,13 @@ enum class TransactionCategories {
     WANT, NEED
 }
 
+enum class TransactionImportance {
+    SHOULD_NOT_HAVE,
+    NICE_TO_HAVE,
+    HAVE_TO_HAVE,
+    ESSENTIAL,
+}
+
 @Entity()
 data class Transaction(
     @Id
@@ -20,6 +27,9 @@ data class Transaction(
     var title: String,
 
     var category: String?,
+
+    @Enumerated()
+    var importance: TransactionImportance,
 
     @Column(
         name = "created_date",

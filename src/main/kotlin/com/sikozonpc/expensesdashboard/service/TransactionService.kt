@@ -3,6 +3,7 @@ package com.sikozonpc.expensesdashboard.service
 import com.sikozonpc.expensesdashboard.expection.NotFoundException
 import com.sikozonpc.expensesdashboard.entity.Transaction
 import com.sikozonpc.expensesdashboard.dto.TransactionDTO
+import com.sikozonpc.expensesdashboard.entity.TransactionImportance
 import com.sikozonpc.expensesdashboard.repository.TransactionRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -22,7 +23,7 @@ class TransactionService(
     }
 
     fun add(dto: TransactionDTO): TransactionDTO {
-        val entity = Transaction(null, dto.amount, dto.title, dto.category, LocalDateTime.now())
+        val entity = Transaction(null, dto.amount, dto.title, dto.category, TransactionImportance.NICE_TO_HAVE, LocalDateTime.now())
 
         logger.info("Saving transaction $entity")
 
