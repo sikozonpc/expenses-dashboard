@@ -2,6 +2,7 @@ package com.sikozonpc.expensesdashboard.service
 
 import com.sikozonpc.expensesdashboard.dto.SpendingTargetDTO
 import com.sikozonpc.expensesdashboard.entity.Transaction
+import com.sikozonpc.expensesdashboard.entity.TransactionsImportance
 import com.sikozonpc.expensesdashboard.expection.NotFoundException
 import com.sikozonpc.expensesdashboard.repository.BudgetRuleRepository
 import com.sikozonpc.expensesdashboard.repository.MonthlyIncomeRepository
@@ -26,52 +27,71 @@ class SpendingTargetService(
 
         val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
 
-        val savingsPercentage =
-            BigDecimal(100) - (budgetRule.wantsPercentage.toBigDecimal() + budgetRule.needsPercentage.toBigDecimal())
+        val (_, essentialsGoal, haveToHaveGoal, niceToHaveGoal, savingsGoal) = budgetRule
+
+        val savingsPercentage = BigDecimal(savingsGoal)
 
         val monthlyIncomesSum = monthlyIncomes
             .map { it.amount }
             .reduce { total, amount -> total + amount }
 
-        val monthlySavingPercentage = (savingsPercentage * monthlyIncomesSum) / BigDecimal(100)
+        val monthlySavingsTotal = (savingsPercentage * monthlyIncomesSum) / BigDecimal(100)
 
         val transactions = transactionRepository.findByMonthWindow(currentMonth - monthDecrementWindow, currentMonth)
 
-        val monthlyNeedsSum = filterAndSumByCategory(transactions, "NEED")
-        val monthlyWantsSum = filterAndSumByCategory(transactions, "WANT")
-        val monthlySavingsSum = filterAndSumByCategory(transactions, "")
+        val monthlyShouldNotHave = filterAndSumByImportance(transactions, TransactionsImportance.SHOULD_NOT_HAVE)
+        val monthlyNiceToHave = filterAndSumByImportance(transactions, TransactionsImportance.NICE_TO_HAVE)
+        val monthlyHaveToHave = filterAndSumByImportance(transactions, TransactionsImportance.HAVE_TO_HAVE)
+        val monthlyEssentials = filterAndSumByImportance(transactions, TransactionsImportance.ESSENTIAL)
+
+        val allExpensesSum = monthlyEssentials - monthlyHaveToHave - monthlyNiceToHave - monthlyShouldNotHave
 
         return listOf(
             SpendingTargetDTO(
-                monthlySavingPercentage,
-                (monthlyIncomesSum + monthlySavingsSum) - monthlyNeedsSum - monthlyWantsSum,
+                monthlySavingsTotal,
+                monthlyIncomesSum - allExpensesSum,
                 savingsPercentage,
                 "#00A86B",
                 "SAVINGS"
             ),
             SpendingTargetDTO(
-                (budgetRule.wantsPercentage.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
-                monthlyWantsSum,
-                BigDecimal(budgetRule.wantsPercentage),
+                (essentialsGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                monthlyEssentials,
+                BigDecimal(essentialsGoal),
                 "#48AAAD",
-                "WANTS"
+                "ESSENTIALS"
             ),
             SpendingTargetDTO(
-                (budgetRule.needsPercentage.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
-                monthlyNeedsSum,
-                BigDecimal(budgetRule.needsPercentage),
+                (haveToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                monthlyHaveToHave,
+                BigDecimal(haveToHaveGoal),
                 "#FDA172",
-                "NEEDS"
+                "HAVE TO HAVE"
+            ),
+            SpendingTargetDTO(
+                (niceToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                monthlyNiceToHave,
+                BigDecimal(niceToHaveGoal),
+                "#FDA172",
+                "NICE TO HAVE"
+            ),
+            SpendingTargetDTO(
+                BigDecimal(0), // TODO: This might need recalculation based on the sum of the above importances
+                monthlyShouldNotHave,
+                BigDecimal(0),
+                "RED",
+                "SHOULD NOT HAVE"
             ),
         )
     }
 }
 
-fun filterAndSumByCategory(transactions: List<Transaction>, category: String): BigDecimal {
-    val filteredByCategory = transactions
-        .filter { it.category.equals(category) }
-        .map { it.amount }
-    if (filteredByCategory.isEmpty()) return BigDecimal(0)
 
-    return filteredByCategory.reduce { total, amount -> total + amount }
+fun filterAndSumByImportance(transactions: List<Transaction>, importance: TransactionsImportance): BigDecimal {
+    val filteredByImportance = transactions
+        .filter { it.importance === importance }
+        .map { it.amount }
+    if (filteredByImportance.isEmpty()) return BigDecimal(0)
+
+    return filteredByImportance.reduce { total, amount -> total + amount }
 }

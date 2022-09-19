@@ -15,14 +15,12 @@ data class MonthlyIncome(
 
     var amount: BigDecimal,
 
-    // TODO: Rename to "is_recurring"
-    var isConstant: Boolean = true,
+    var isRecurring: Boolean = true,
 
     @Column(
-        name = "created_date",
         nullable = false,
         updatable = false,
     )
     @CreatedDate
-    val createdDate: LocalDateTime,
+    val createdAt: LocalDateTime,
 )

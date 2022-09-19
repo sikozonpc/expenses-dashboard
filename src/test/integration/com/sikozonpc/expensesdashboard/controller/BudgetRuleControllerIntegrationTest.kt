@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach
 class BudgetRuleControllerIntegrationTest : BaseTests() {
     @Test
     fun `should add a budget rule`() {
-        val payload = BudgetRuleDTO(420, "20.9", "60.0")
+        val payload = BudgetRuleDTO(420, "20.9", "10.0", "10", "50")
 
         val budgetRule = webTestClient.post()
             .uri(BudgetRuleControllerURL)

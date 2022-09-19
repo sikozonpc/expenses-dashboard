@@ -1,5 +1,6 @@
 package com.sikozonpc.expensesdashboard.entity
 
+import com.sikozonpc.expensesdashboard.dto.BudgetRuleDTO
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -10,15 +11,26 @@ data class BudgetRule(
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Int?,
 
-    var needsPercentage: String,
+    var essentialsGoal: String,
 
-    var wantsPercentage: String,
+    var haveToHaveGoal: String,
+
+    var niceToHaveGoal: String,
+
+    var savingsGoal: String,
 
     @Column(
-        name = "created_date",
         nullable = false,
         updatable = false,
     )
     @CreatedDate
-    val createdDate: LocalDateTime,
+    val createdAt: LocalDateTime,
+)
+
+fun BudgetRule?.toDTO(): BudgetRuleDTO = BudgetRuleDTO(
+    this?.id,
+    this?.essentialsGoal ?: "",
+    this?.haveToHaveGoal ?: "",
+    this?.niceToHaveGoal ?: "",
+    this?.savingsGoal ?: "",
 )

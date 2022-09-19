@@ -1,9 +1,6 @@
 package com.sikozonpc.expensesdashboard.dto
 
-import com.sikozonpc.expensesdashboard.annotation.IsTransactionCategory
 import java.math.BigDecimal
-import javax.validation.constraints.DecimalMax
-import javax.validation.constraints.DecimalMin
 
 
 data class SpendingTargetDTO(
@@ -15,6 +12,5 @@ data class SpendingTargetDTO(
 
     val color: String? = "",
 
-    @get:IsTransactionCategory(message = "category must be one of 'WANT' or 'NEED'")
-    var category: String? = "",
+    val category: String = "",
 )

@@ -2,6 +2,7 @@ package com.sikozonpc.expensesdashboard.service
 
 import com.sikozonpc.expensesdashboard.entity.BudgetRule
 import com.sikozonpc.expensesdashboard.dto.BudgetRuleDTO
+import com.sikozonpc.expensesdashboard.entity.toDTO
 import com.sikozonpc.expensesdashboard.repository.BudgetRuleRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -14,24 +15,22 @@ class BudgetRuleService(
     companion object : KLogging()
 
     fun getAll(): List<BudgetRuleDTO> {
-        return budgetRuleRepository.findAll().map {
-            BudgetRuleDTO(it.id, it.needsPercentage, it.wantsPercentage)
-        }
+        return budgetRuleRepository.findAll().map { it.toDTO() }
     }
 
     fun add(dto: BudgetRuleDTO): BudgetRuleDTO {
         val entity = BudgetRule(
             null,
-            dto.needsPercentage,
-            dto.wantsPercentage,
+            dto.essentialsGoal,
+            dto.haveToHaveGoal,
+            dto.niceToHaveGoal,
+            dto.savingsGoal,
             LocalDateTime.now(),
         )
 
         logger.info("Saving budgetRule $entity")
 
-        return budgetRuleRepository.save(entity).let {
-            BudgetRuleDTO(it.id, it.needsPercentage, it.wantsPercentage)
-        }
+        return budgetRuleRepository.save(entity).let { it.toDTO() }
     }
 
     fun deleteBydId(id: Int) = budgetRuleRepository.deleteById(id)

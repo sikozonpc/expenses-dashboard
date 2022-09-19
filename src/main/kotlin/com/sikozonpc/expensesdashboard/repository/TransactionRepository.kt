@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository
 
 interface TransactionRepository : CrudRepository<Transaction, Int> {
     @Query(
-        value = "SELECT * FROM transaction WHERE MONTH(created_date) >= ?1 AND MONTH(created_date) <= ?2",
+        value = "SELECT * FROM transaction WHERE MONTH(created_at) >= ?1 AND MONTH(created_at) <= ?2",
         nativeQuery = true
     )
     fun findByMonthWindow(initial: Int = 0, final: Int = 0): List<Transaction>

@@ -1,8 +1,8 @@
 package com.sikozonpc.expensesdashboard.controller
 
 import com.sikozonpc.expensesdashboard.dto.SpendingTargetDTO
-import com.sikozonpc.expensesdashboard.entity.Transaction
-import com.sikozonpc.expensesdashboard.service.filterAndSumByCategory
+import com.sikozonpc.expensesdashboard.entity.TransactionsImportance
+import com.sikozonpc.expensesdashboard.service.filterAndSumByImportance
 import com.sikozonpc.expensesdashboard.util.BaseTests
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -54,35 +54,52 @@ class SpendingTargetControllerIntegrationTest : BaseTests() {
             .map { it.amount }
             .reduce { total, amount -> total + amount }
 
-        val savingsPercentage =
-            BigDecimal(100) - (budgetRule.wantsPercentage.toBigDecimal() + budgetRule.needsPercentage.toBigDecimal())
+        val (_, essentialsGoal, haveToHaveGoal, niceToHaveGoal, savingsGoal) = budgetRule
 
-        val monthlyNeedsSum = filterAndSumByCategory(fakeTransactions, "NEED")
-        val monthlyWantsSum = filterAndSumByCategory(fakeTransactions, "WANT")
-        val monthlySavingsSum = filterAndSumByCategory(fakeTransactions, "")
+        val savingsPercentage = BigDecimal(savingsGoal)
+        val monthlySavingsTotal = (savingsPercentage * monthlyIncomesSum) / BigDecimal("100")
 
-        assertEquals(spendingTargets!!.count(), 3)
+        val monthlyShouldNotHave = filterAndSumByImportance(fakeTransactions, TransactionsImportance.SHOULD_NOT_HAVE)
+        val monthlyNiceToHave = filterAndSumByImportance(fakeTransactions, TransactionsImportance.NICE_TO_HAVE)
+        val monthlyHaveToHave = filterAndSumByImportance(fakeTransactions, TransactionsImportance.HAVE_TO_HAVE)
+        val monthlyEssentials = filterAndSumByImportance(fakeTransactions, TransactionsImportance.ESSENTIAL)
+
+        val allExpensesSum = monthlyEssentials - monthlyHaveToHave - monthlyNiceToHave - monthlyShouldNotHave
+
+        assertEquals(spendingTargets!!.count(), 5)
 
         assertEquals(spendingTargets[0].category, "SAVINGS")
         assertEquals(spendingTargets[0].color, "#00A86B")
-        assertEquals(spendingTargets[0].total, (savingsPercentage * monthlyIncomesSum) / BigDecimal(100))
+        assertEquals(spendingTargets[0].total, monthlySavingsTotal)
         assertEquals(spendingTargets[0].percentage, savingsPercentage)
-        assertEquals(spendingTargets[0].current,
-            (monthlyIncomesSum + monthlySavingsSum) - monthlyNeedsSum - monthlyWantsSum)
+        assertEquals(spendingTargets[0].current, monthlyIncomesSum - allExpensesSum)
 
-        assertEquals(spendingTargets[1].category, "WANTS")
+        assertEquals(spendingTargets[1].category, "ESSENTIALS")
         assertEquals(spendingTargets[1].color, "#48AAAD")
         assertEquals(spendingTargets[1].total,
-            (budgetRule.wantsPercentage.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
-        assertEquals(spendingTargets[1].percentage, BigDecimal(budgetRule.wantsPercentage))
-        assertEquals(spendingTargets[1].current, monthlyWantsSum)
+            (essentialsGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
+        assertEquals(spendingTargets[1].percentage, BigDecimal(essentialsGoal))
+        assertEquals(spendingTargets[1].current, monthlyEssentials)
 
-        assertEquals(spendingTargets[2].category, "NEEDS")
+        assertEquals(spendingTargets[2].category, "HAVE TO HAVE")
         assertEquals(spendingTargets[2].color, "#FDA172")
         assertEquals(spendingTargets[2].total,
-            (budgetRule.needsPercentage.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
-        assertEquals(spendingTargets[2].percentage, BigDecimal(budgetRule.needsPercentage))
-        assertEquals(spendingTargets[2].current, monthlyNeedsSum)
+            (haveToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
+        assertEquals(spendingTargets[2].percentage, BigDecimal(haveToHaveGoal))
+        assertEquals(spendingTargets[2].current, monthlyHaveToHave)
+
+        assertEquals(spendingTargets[3].category, "NICE TO HAVE")
+        assertEquals(spendingTargets[3].color, "#FDA172")
+        assertEquals(spendingTargets[3].total,
+            (niceToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
+        assertEquals(spendingTargets[3].percentage, BigDecimal(niceToHaveGoal))
+        assertEquals(spendingTargets[3].current, monthlyNiceToHave)
+
+        assertEquals(spendingTargets[4].category, "SHOULD NOT HAVE")
+        assertEquals(spendingTargets[4].color, "RED")
+        assertEquals(spendingTargets[4].total, BigDecimal(0))
+        assertEquals(spendingTargets[4].percentage, BigDecimal(0))
+        assertEquals(spendingTargets[4].current, monthlyShouldNotHave)
     }
 
     @Test

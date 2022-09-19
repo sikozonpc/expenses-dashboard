@@ -1,9 +1,9 @@
 package com.sikozonpc.expensesdashboard.controller
 
 import com.sikozonpc.expensesdashboard.dto.TransactionDTO
+import com.sikozonpc.expensesdashboard.entity.TransactionsImportance
 import com.sikozonpc.expensesdashboard.util.BaseTests
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.data.repository.findByIdOrNull
+import java.math.BigDecimal
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -19,7 +20,13 @@ import org.springframework.data.repository.findByIdOrNull
 class TransactionControllerIntegrationTest : BaseTests() {
     @Test
     fun `should add a transaction`() {
-        val payload = TransactionDTO(420, "Sample", "42.69", "WANT")
+        val payload = TransactionDTO(
+            420,
+            "Sample",
+            BigDecimal(42.69),
+            "Housing",
+            TransactionsImportance.ESSENTIAL
+        )
 
         val transaction = webTestClient.post()
             .uri(TransactionControllerURL)
@@ -31,9 +38,10 @@ class TransactionControllerIntegrationTest : BaseTests() {
             .responseBody
 
         assertTrue {
-            // makes sure it was created in the db
-            transaction!!.id != null
+            transaction!!.id != null             // makes sure it was created in the db
             transaction.id != 420
+            transaction.category === "housing"   // test if it converts to lowercase
+            transaction.importance === TransactionsImportance.ESSENTIAL
         }
     }
 
@@ -56,7 +64,7 @@ class TransactionControllerIntegrationTest : BaseTests() {
 
     @Test
     fun `should update a transaction`() {
-        val newAmount = "9999.999"
+        val newAmount = BigDecimal("9999.99" )
         val newTitle = "new title"
         val newCategory = ""
 
@@ -82,7 +90,7 @@ class TransactionControllerIntegrationTest : BaseTests() {
 
     @Test
     fun `should throw a 404 while trying to update a transaction that does not exist`() {
-        val updated = TransactionDTO(422, "", "", "")
+        val updated = TransactionDTO(422, "", BigDecimal("0"), "", TransactionsImportance.ESSENTIAL)
 
         webTestClient.put()
             .uri("$TransactionControllerURL/422")

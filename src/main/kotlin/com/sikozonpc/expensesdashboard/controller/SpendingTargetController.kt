@@ -19,5 +19,5 @@ class SpendingTargetController(
         @RequestParam("monthDecrement", required = false, defaultValue = "0")
         @Min(0)
         monthDecrement: Int,
-    ): List<SpendingTargetDTO> = spendingTargetService.calculate(monthDecrement.toInt())
+    ): List<SpendingTargetDTO> = spendingTargetService.calculate(monthDecrement)
 }

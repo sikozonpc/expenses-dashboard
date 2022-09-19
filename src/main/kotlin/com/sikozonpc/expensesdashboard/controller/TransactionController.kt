@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
+import javax.validation.Validation
 
 const val TransactionControllerURL = "/api/v1/transactions"
 

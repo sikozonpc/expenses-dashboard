@@ -1,18 +1,23 @@
 package com.sikozonpc.expensesdashboard.entity
 
+import com.sikozonpc.expensesdashboard.dto.TransactionDTO
 import org.springframework.data.annotation.CreatedDate
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.persistence.*
 
-enum class TransactionCategories {
-    WANT, NEED
-}
-
-enum class TransactionImportance {
+enum class TransactionsImportance {
+    BLANK,
+    /* Regretted expenses, it happens. */
     SHOULD_NOT_HAVE,
+
+    // Expenses that you can live without but you wanted.
     NICE_TO_HAVE,
+
+    // Expenses that your life would be way less enjoyable without.
     HAVE_TO_HAVE,
+
+    // Essentials needs expenses.
     ESSENTIAL,
 }
 
@@ -29,13 +34,20 @@ data class Transaction(
     var category: String?,
 
     @Enumerated()
-    var importance: TransactionImportance,
+    var importance: TransactionsImportance,
 
     @Column(
-        name = "created_date",
         nullable = false,
         updatable = false,
     )
     @CreatedDate
-    val createdDate: LocalDateTime,
+    val createdAt: LocalDateTime,
+)
+
+fun Transaction?.toDTO(): TransactionDTO = TransactionDTO(
+    this?.id,
+    this?.title ?: "",
+    this?.amount ?: BigDecimal(0),
+    this?.category ?: "",
+    this?.importance ?: TransactionsImportance.SHOULD_NOT_HAVE,
 )
