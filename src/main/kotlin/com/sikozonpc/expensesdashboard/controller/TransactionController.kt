@@ -11,7 +11,7 @@ import javax.validation.Validation
 const val TransactionControllerURL = "/api/v1/transactions"
 
 @RestController
-@RequestMapping(TransactionControllerURL)
+@RequestMapping(TransactionControllerURL, headers = ["Accept=text/json"])
 @Validated
 class TransactionController(
     val transactionService: TransactionService,

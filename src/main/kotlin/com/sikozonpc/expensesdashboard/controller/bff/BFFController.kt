@@ -10,7 +10,7 @@ const val BFFControllerURL = "/api/v1/bff"
 
 
 @RestController
-@RequestMapping(BFFControllerURL)
+@RequestMapping(BFFControllerURL, headers = ["Accept=text/json"])
 class BFFController(
     private val webBFFService: BFFService,
 ) {

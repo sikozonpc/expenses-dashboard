@@ -9,7 +9,7 @@ import javax.validation.constraints.Min
 const val SpendingTargetControllerURL = "/api/v1/spending-targets"
 
 @RestController
-@RequestMapping(SpendingTargetControllerURL)
+@RequestMapping(SpendingTargetControllerURL, headers = ["Accept=text/json"])
 @Validated
 class SpendingTargetController(
     val spendingTargetService: SpendingTargetService,
