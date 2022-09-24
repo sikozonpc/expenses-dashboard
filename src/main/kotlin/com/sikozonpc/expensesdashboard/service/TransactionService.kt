@@ -8,6 +8,7 @@ import com.sikozonpc.expensesdashboard.repository.TransactionRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class TransactionService(
@@ -52,5 +53,13 @@ class TransactionService(
             }
         }
 
+    }
+
+    fun getAllByMonthDecrement(month: Int): List<TransactionDTO> {
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+
+        return transactionRepository
+            .findByMonthWindow(currentMonth - month, currentMonth)
+            .map { it.toDTO() }
     }
 }

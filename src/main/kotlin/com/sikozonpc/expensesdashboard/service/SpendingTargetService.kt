@@ -35,7 +35,7 @@ class SpendingTargetService(
             .map { it.amount }
             .reduce { total, amount -> total + amount }
 
-        val monthlySavingsTotal = (savingsPercentage * monthlyIncomesSum) / BigDecimal(100)
+        val monthlySavingGoalTotal = (savingsPercentage * monthlyIncomesSum) / BigDecimal(100)
 
         val transactions = transactionRepository.findByMonthWindow(currentMonth - monthDecrementWindow, currentMonth)
 
@@ -44,43 +44,46 @@ class SpendingTargetService(
         val monthlyHaveToHave = filterAndSumByImportance(transactions, TransactionsImportance.HAVE_TO_HAVE)
         val monthlyEssentials = filterAndSumByImportance(transactions, TransactionsImportance.ESSENTIAL)
 
-        val allExpensesSum = monthlyEssentials - monthlyHaveToHave - monthlyNiceToHave - monthlyShouldNotHave
+        val allExpensesSum = monthlyEssentials + monthlyHaveToHave + monthlyNiceToHave + monthlyShouldNotHave
+        val essentialsTotal = (essentialsGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100)
+        val haveToHaveTotal = (haveToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100)
+        val niceToHaveTotal = (niceToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100)
 
         return listOf(
             SpendingTargetDTO(
-                monthlySavingsTotal,
+                monthlySavingGoalTotal,
                 monthlyIncomesSum - allExpensesSum,
                 savingsPercentage,
                 "#00A86B",
                 "SAVINGS"
             ),
             SpendingTargetDTO(
-                (essentialsGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                essentialsTotal,
                 monthlyEssentials,
                 BigDecimal(essentialsGoal),
                 "#48AAAD",
                 "ESSENTIALS"
             ),
             SpendingTargetDTO(
-                (haveToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                haveToHaveTotal,
                 monthlyHaveToHave,
                 BigDecimal(haveToHaveGoal),
                 "#FDA172",
-                "HAVE TO HAVE"
+                "HAVE_TO_HAVE"
             ),
             SpendingTargetDTO(
-                (niceToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100),
+                niceToHaveTotal,
                 monthlyNiceToHave,
                 BigDecimal(niceToHaveGoal),
                 "#FDA172",
-                "NICE TO HAVE"
+                "NICE_TO_HAVE"
             ),
             SpendingTargetDTO(
                 BigDecimal(0), // TODO: This might need recalculation based on the sum of the above importances
                 monthlyShouldNotHave,
                 BigDecimal(0),
                 "RED",
-                "SHOULD NOT HAVE"
+                "SHOULD_NOT_HAVE"
             ),
         )
     }
@@ -88,8 +91,10 @@ class SpendingTargetService(
 
 
 fun filterAndSumByImportance(transactions: List<Transaction>, importance: TransactionsImportance): BigDecimal {
+    val importanceString =  importance.name.lowercase()
+
     val filteredByImportance = transactions
-        .filter { it.importance === importance }
+        .filter { it.importance.name.lowercase() == importanceString }
         .map { it.amount }
     if (filteredByImportance.isEmpty()) return BigDecimal(0)
 

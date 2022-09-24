@@ -24,7 +24,7 @@ enum class TransactionsImportance {
 @Entity()
 data class Transaction(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     val id: Int?,
 
     var amount: BigDecimal,
@@ -33,7 +33,7 @@ data class Transaction(
 
     var category: String?,
 
-    @Enumerated()
+    @Enumerated(EnumType.STRING)
     var importance: TransactionsImportance,
 
     @Column(

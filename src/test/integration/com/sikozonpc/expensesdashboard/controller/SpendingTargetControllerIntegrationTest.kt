@@ -64,7 +64,7 @@ class SpendingTargetControllerIntegrationTest : BaseTests() {
         val monthlyHaveToHave = filterAndSumByImportance(fakeTransactions, TransactionsImportance.HAVE_TO_HAVE)
         val monthlyEssentials = filterAndSumByImportance(fakeTransactions, TransactionsImportance.ESSENTIAL)
 
-        val allExpensesSum = monthlyEssentials - monthlyHaveToHave - monthlyNiceToHave - monthlyShouldNotHave
+        val allExpensesSum = monthlyEssentials + monthlyHaveToHave + monthlyNiceToHave + monthlyShouldNotHave
 
         assertEquals(spendingTargets!!.count(), 5)
 
@@ -81,21 +81,21 @@ class SpendingTargetControllerIntegrationTest : BaseTests() {
         assertEquals(spendingTargets[1].percentage, BigDecimal(essentialsGoal))
         assertEquals(spendingTargets[1].current, monthlyEssentials)
 
-        assertEquals(spendingTargets[2].category, "HAVE TO HAVE")
+        assertEquals(spendingTargets[2].category, "HAVE_TO_HAVE")
         assertEquals(spendingTargets[2].color, "#FDA172")
         assertEquals(spendingTargets[2].total,
             (haveToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
         assertEquals(spendingTargets[2].percentage, BigDecimal(haveToHaveGoal))
         assertEquals(spendingTargets[2].current, monthlyHaveToHave)
 
-        assertEquals(spendingTargets[3].category, "NICE TO HAVE")
+        assertEquals(spendingTargets[3].category, "NICE_TO_HAVE")
         assertEquals(spendingTargets[3].color, "#FDA172")
         assertEquals(spendingTargets[3].total,
             (niceToHaveGoal.toBigDecimal() * monthlyIncomesSum) / BigDecimal(100))
         assertEquals(spendingTargets[3].percentage, BigDecimal(niceToHaveGoal))
         assertEquals(spendingTargets[3].current, monthlyNiceToHave)
 
-        assertEquals(spendingTargets[4].category, "SHOULD NOT HAVE")
+        assertEquals(spendingTargets[4].category, "SHOULD_NOT_HAVE")
         assertEquals(spendingTargets[4].color, "RED")
         assertEquals(spendingTargets[4].total, BigDecimal(0))
         assertEquals(spendingTargets[4].percentage, BigDecimal(0))

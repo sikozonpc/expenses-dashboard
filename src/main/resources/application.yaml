@@ -15,7 +15,7 @@ spring:
     generate-ddl: true
     show-sql: true
     hibernate:
-      # Uncomment for development: ddl-auto: create-drop # recreates the db, not recommended for prod
+      #ddl-auto: create-drop #  Uncomment for development: recreates the db, not recommended for prod
     properties:
       hibernate:
         jdbc:

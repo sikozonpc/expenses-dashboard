@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class BFFService(
-    private val transactionRepository: TransactionRepository,
+    private val transactionService: TransactionService,
     private val monthlyIncomeRepository: MonthlyIncomeRepository,
 ) {
     fun composeAndReturnForWeb(): WebBFFDTO {
-        val transactions = transactionRepository.findAll()
+        val transactions = transactionService.getAllByMonthDecrement(0)
         val monthlyIncomes = monthlyIncomeRepository.findAll().toList()
 
         return WebBFFDTO(

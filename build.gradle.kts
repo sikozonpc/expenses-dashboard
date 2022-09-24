@@ -24,15 +24,20 @@ dependencyManagement {
 }
 
 dependencies {
+	// Web
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+	// Security
+
+	// Development tools
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+	// Kotlin
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 	// MySQL driver
 	runtimeOnly("mysql:mysql-connector-java")
@@ -43,13 +48,12 @@ dependencies {
 	testImplementation("io.mockk:mockk:1.12.5")
 	testImplementation("com.ninja-squad:springmockk:3.1.1")
 
-	// logging
+	// Logging
 	implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
 
 	// TestContainers
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql:1.17.3")
-
 }
 
 tasks.withType<KotlinCompile> {
