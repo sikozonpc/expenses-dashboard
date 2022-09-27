@@ -54,6 +54,8 @@ dependencies {
 	// TestContainers
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:mysql:1.17.3")
+
+	implementation("com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.7.0")
 }
 
 tasks.withType<KotlinCompile> {

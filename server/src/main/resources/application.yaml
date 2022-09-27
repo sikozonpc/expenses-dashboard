@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    - mysql
   data:
     rest:
       base-path: /api
@@ -6,16 +8,14 @@ spring:
     name: expenses-dashboard-api
   datasource:
     ddl-auto: update
-    url: jdbc:mysql://localhost:3306/expenses_dashboard
-    username: root
-    password: mypassword
+    #password: Development example mypassword
     driver-class-name: com.mysql.cj.jdbc.Driver
     show-sql: true
   jpa:
     generate-ddl: true
     show-sql: true
     hibernate:
-      #ddl-auto: create-drop #  Uncomment for development: recreates the db, not recommended for prod
+    #ddl-auto: create-drop #  Uncomment for development: recreates the db, not recommended for prod
     properties:
       hibernate:
         jdbc:
