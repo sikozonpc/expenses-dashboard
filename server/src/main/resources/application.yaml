@@ -1,6 +1,6 @@
 spring:
   profiles:
-    - mysql
+    active: ${PROFILE:mysql}
   data:
     rest:
       base-path: /api
